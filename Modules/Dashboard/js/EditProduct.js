@@ -45,7 +45,7 @@ function EditProduct(props) {
         let productId = path.split('/')[3]
 
 
-        axios.post('/api/get-product',{productId})
+        axios.get('/api/get-product/${productId}')
         .then((res)=>{
             console.log();
         })

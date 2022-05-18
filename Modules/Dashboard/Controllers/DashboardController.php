@@ -195,7 +195,7 @@ class DashboardController extends Controller
     public function get_list_prod(Request $request)
     {
 
-        if ($this->check_request($request,'post')) {
+        if ($this->check_request($request, 'post')) {
             // mặc định là trang 1
             $page = 1;
 
@@ -207,7 +207,7 @@ class DashboardController extends Controller
             //   Chỉ cho Admin Access
             if ($group == 2) {
                 // Phương thức từ  Repository
-                $result = $this->versionRepo->get_limit_prod(1,2);
+                $result = $this->versionRepo->get_limit_prod($start, $total_item);
                 return response()->json([
                     ...$result
                 ]);
@@ -216,10 +216,16 @@ class DashboardController extends Controller
                     'error' => 'Access Denined!!'
                 ], 401);
             }
-        } else {
-            return response()->json([
-                'error' => 'method not allow in url !!'
-            ], 400);
         }
+    }
+
+    public function get_product(Request $request)
+    {
+        //   Chỉ cho Admin Access
+        // Phương thức từ  Repository
+        $result = $this->versionRepo->get_single_product($request->route('id'),$request->route('type') );
+        return response()->json([
+            ...$result
+        ]);
     }
 }

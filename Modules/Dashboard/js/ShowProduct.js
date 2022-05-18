@@ -94,7 +94,7 @@ function ShowProduct(props) {
                     key="action"
                     render={(text, record) => (
                         <Space size="middle" key={record}>
-                            <Link to={`/admin/edit-product/`+record.product_id} >
+                            <Link to={`/admin/edit-product/`+record.product_id+'/'+record.product_type} >
                                 <Button>edit</Button>
                             </Link>
                             <Button onClick={()=>deleteProduct(record.product_id)} style={{ color: 'red' }} >Delete</Button>

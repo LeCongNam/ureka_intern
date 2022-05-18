@@ -10,6 +10,7 @@ Route::middleware('App\Http\Middleware\check_api')->prefix('api')->group(functio
     Route::post('/add-user', 'Modules\Dashboard\Controllers\DashboardController@add_user');
     Route::any('/add-product', 'Modules\Dashboard\Controllers\DashboardController@add_product');
     Route::post('/list-product', 'Modules\Dashboard\Controllers\DashboardController@get_list_prod');
+    Route::get('/get-product/{id}/{type}', 'Modules\Dashboard\Controllers\DashboardController@get_product');
 
 });
 
