@@ -20,12 +20,14 @@ function Login() {
             }
           })
           .catch(function (error) {
+              alert('Email or Password Invalid!!!')
             console.log(error?.message?.data);
           });
     };
 
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
+        alert('Please Enter all Field!!!')
     };
 
     const gotoRegister = ()=>{

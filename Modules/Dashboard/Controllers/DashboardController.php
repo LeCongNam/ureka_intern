@@ -137,7 +137,8 @@ class DashboardController extends Controller
 
             // find id product
             $check = $this->productRepo->get_product_id($product_id);
-            if ($check && $product_type) {
+
+            if (empty($check) == false) {
                 //----Upload hình ảnh  lên server:
                 $path_image = 'public/' . date('Y/m/');
                 $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
@@ -223,9 +224,68 @@ class DashboardController extends Controller
     {
         //   Chỉ cho Admin Access
         // Phương thức từ  Repository
-        $result = $this->versionRepo->get_single_product($request->route('id'),$request->route('type') );
+        $result = $this->versionRepo->get_single_product($request->route('id'), $request->route('type'));
         return response()->json([
             ...$result
         ]);
+    }
+
+    public function edit_product(Request $request)
+    {
+        if ($this->check_request($request, 'post')) {
+            $product_id = $request->product_id;
+            $product_name = $request->product_name;
+            $desc = $request->desc;
+            $product_type = $request->product_type;
+            $url = $request->url;
+
+            //----Upload hình ảnh  lên server:
+            $path_image = 'public/' . date('Y/m/');
+            $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
+            Storage::putFileAs(
+                $path_image,
+                $request->file('icon'),
+                $image_name
+            );
+            $get_path = Storage::url($path_image . $image_name);
+            //----End upload
+
+            // Phương thức từ  Repository
+            $result = $this->versionRepo->update_versions($product_id, $product_type, [
+                'product_id' => $product_id,
+                'product_name' => $product_name,
+                'desc' => $desc,
+                'product_type' => $product_type,
+                'url' => $url,
+                'icon' => $get_path,
+            ]);
+            if ($result) {
+                return response()->json([
+                    'message' => 'Ok',
+                    $result
+                ]);
+            }
+        }
+    }
+
+
+    public function delete_product(Request $request)
+    {
+        if ($this->check_request($request, 'post')) {
+            $product_id = $request->product_id;
+            $product_type = $request->product_type;
+
+            // Phương thức từ  Repository
+            $result = $this->versionRepo->update_versions($product_id, $product_type, [
+                'is_delete' => 1,
+                'deleted_at' => date("Y-m-d H:i:s")
+            ]);
+            if ($result) {
+                return response()->json([
+                    'message' => 'Ok',
+                    $result
+                ]);
+            }
+        }
     }
 }

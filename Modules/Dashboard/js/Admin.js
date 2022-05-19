@@ -53,7 +53,7 @@ import EditProduct from './EditProduct';
                                 <Route path='/admin/show-user' component={ShowUser}/>
                                 <Route path='/admin/add-product' component={AddProduct}/>
                                 <Route path='/admin/show-product' component={ShowProduct}/>
-                                <Route path='/admin/edit-product/:id' component={EditProduct}/>
+                                <Route path='/admin/edit-product/:id/:type' component={EditProduct}/>
                                 <Route exact path='/admin' component={Home}/>
                             </Switch>
                        {/* End Content */}

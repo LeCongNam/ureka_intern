@@ -17413,12 +17413,14 @@ function Login() {
     })["catch"](function (error) {
       var _error$message;
 
+      alert('Email or Password Invalid!!!');
       console.log(error === null || error === void 0 ? void 0 : (_error$message = error.message) === null || _error$message === void 0 ? void 0 : _error$message.data);
     });
   };
 
   var onFinishFailed = function onFinishFailed(errorInfo) {
     console.log('Failed:', errorInfo);
+    alert('Please Enter all Field!!!');
   };
 
   var gotoRegister = function gotoRegister() {

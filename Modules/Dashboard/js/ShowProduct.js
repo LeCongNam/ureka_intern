@@ -6,15 +6,29 @@ import { transform_date } from "./func/show_product_func";
 const { Column } = Table;
 const axios = require('axios').default;
 
-function deleteProduct(id) {
-    console.log(id)
-}
-
-// Hàm đã export
 
 function ShowProduct(props) {
     const [product, setProduct] = useState([]);
     const [page, setPage] = useState(1);
+
+
+    function deleteProduct(id, type) {
+        let conf = confirm('Bạn chắc chắn muốn xóa?')
+        if (conf) {
+            axios.post('/api/delete-product', {
+                'product_id': id,
+                'product_type': type
+            })
+                .then((res) => {
+                    alert('Xóa thành công')
+                    setProduct([] ||product.filter((item) =>  (item.product_id == id) && (item.product_type == type)))
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert('Xóa không  thành công!!')
+                })
+        }
+    }
 
     useEffect(() => {
         let group = Number(localStorage.getItem('group_id'));
@@ -94,10 +108,10 @@ function ShowProduct(props) {
                     key="action"
                     render={(text, record) => (
                         <Space size="middle" key={record}>
-                            <Link to={`/admin/edit-product/`+record.product_id+'/'+record.product_type} >
+                            <Link to={`/admin/edit-product/` + record.product_id + '/' + record.product_type} >
                                 <Button>edit</Button>
                             </Link>
-                            <Button onClick={()=>deleteProduct(record.product_id)} style={{ color: 'red' }} >Delete</Button>
+                            <Button onClick={() => deleteProduct(record.product_id, record.product_type)} style={{ color: 'red' }} >Delete</Button>
                         </Space>
                     )}
                 />

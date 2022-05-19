@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Row, Col, Upload } from 'antd';
+import { Form, Input, Button, Row, Col, Upload, Select } from 'antd';
 import { Tabs } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { useLocation } from "react-router-dom";
+const { Option, OptGroup } = Select;
 
 const { TabPane } = Tabs;
 // const axios = require('axios').default
@@ -31,27 +32,35 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 (() => {
-    document.title = "Add Product";
+    document.title = "Edit Product";
 })()
 
 function EditProduct(props) {
     var file
     const [form] = Form.useForm();
     const [type, setType] = useState('dev');
-    const location = useLocation() 
+    const location = useLocation()
 
-    useEffect(()=>{
-        let path = location.pathname
-        let productId = path.split('/')[3]
+    useEffect(() => {
+        let path = location.pathname.split('/')
+        let productId = path[3]
+        let productType = path[4]
+        let url = `/api/get-product/${productId}/${productType}/`
 
-
-        axios.get('/api/get-product/${productId}')
-        .then((res)=>{
-            console.log();
-        })
-        .catch((err)=>{
-            console.log(err);
-        })
+        axios.get(url)
+            .then((res) => {
+                let data = { ...res.data[0] }
+                form.setFieldsValue({
+                    product_id: data.product_id,
+                    product_name: data.product_name,
+                    product_type: data.product_type,
+                    desc: data.desc,
+                    url: data.url
+                })
+            })
+            .catch((err) => {
+                console.log(err);
+            })
 
     })
 
@@ -62,9 +71,8 @@ function EditProduct(props) {
     };
 
     const onFinish = (formValues) => {
-        delete formValues?.upload
-        formValues['type'] = type
         console.log(formValues);
+        delete formValues?.upload
         let { originFileObj, ...args } = file
         formValues['icon'] = file.originFileObj || {}
         let formData = new FormData();
@@ -72,7 +80,7 @@ function EditProduct(props) {
             formData.append(key, formValues[key]);
         }
 
-        axios.post('/api/add-product', formData)
+        axios.post('/api/edit-product', formData)
             .then((res) => {
                 console.log(res)
                 alert('Thành công')
@@ -83,19 +91,27 @@ function EditProduct(props) {
             })
             .then((res) => console.log(res))
 
-
     };
 
     const tabInfo = (activeKey) => {
         setType(activeKey)
     }
 
+    const onFinishFailed = errorInfo => {
+        console.log('Failed:', errorInfo);
+        alert('Please Enter all Field!!!')
+    };
+
     return (
         <div>
             <Row>
                 <Col offset={4} span={9}>
-                    <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+                    <Form {...layout} name="nest-messages" form={form}
+                        onFinish={onFinish} validateMessages={validateMessages}
+                        onFinishFailed={onFinishFailed}
+                    >
                         <Form.Item
+                            disabled
                             name="product_id"
                             label="Product ID"
                             rules={[
@@ -105,7 +121,7 @@ function EditProduct(props) {
                                 },
                             ]}
                         >
-                            <Input />
+                            <Input disabled/>
                         </Form.Item>
 
                         <Form.Item
@@ -134,54 +150,34 @@ function EditProduct(props) {
                             <Input.TextArea />
                         </Form.Item>
 
-                        <Tabs defaultActiveKey="dev" centered onChange={tabInfo}>
-                            <TabPane tab="dev" key="dev">
-                                <Form.Item
-                                    name="type"
-                                    label="Type"
-                                    key={'dev'}
-                                    initialValue={type}
-                                >
-                                    <Input disabled value='dev' />
-                                </Form.Item>
-                                <Form.Item
-                                    name="url"
-                                    label="Url"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: "Please enter URL"
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
+                        <Form.Item
+                            name="url"
+                            label="url"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Please enter product name"
+                                },
+                            ]}
+                        >
+                            <Input />
+                        </Form.Item>
 
-                            </TabPane>
-                            <TabPane tab="product" key="prod">
-                                <Form.Item
-                                    name="prod_type"
-                                    label="Type"
-                                    initialValue={type}
-                                    key='prod'
-                                >
-                                    <Input value='prod' disabled />
-                                </Form.Item>
-                                <Form.Item
-                                    name="URL"
-                                    label="url"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: "Please enter URL"
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
+                        <Form.Item name="product_type" label="Product Type"
+                            rules={
+                                [
+                                    {
+                                        required: true,
+                                        message: 'Please enter Description Product'
+                                    }
+                                ]
+                            } >
+                            <Select style={{ width: 200 }} >
+                                <Option disabled value="dev">Dev</Option>
+                                <Option disabled value="prod">Product</Option>
+                            </Select>
+                        </Form.Item>
 
-                            </TabPane>
-                        </Tabs>
                         <Form.Item
                             name="upload"
                             label="Upload"
