@@ -42,16 +42,12 @@ class AuthController extends Controller
     }
 
 
-
     public function register(Request $request)
     {
         if ($request->isMethod('post')) {
-            $user_name = trim($request->user_name);
-            $password = trim($request->password);
-            $email = trim($request->email);
-
-
-
+            $user_name = $request->user_name;
+            $password = $request->password;
+            $email = $request->email;
             $validated = Validator::make($request->all(), [
                 'user_name' => 'required|unique:members|min:5',
                 'email' => 'required|unique:members',
@@ -66,24 +62,26 @@ class AuthController extends Controller
             } else {
                 // Pass Validate->Tiến hành check User đã tồn tại chưa
                 // Chưa tồn  tại: Cho đăng kí
-
                 if (Auth::attempt(['user_name' => $user_name, 'email' => $email, 'password' => $password]) == false) {
                     $new_password = bcrypt($password);
-                    $group = null;
+                    $group = 2;
 
                     if ($user_name == 'admin') {
-                        $group = 2;
+                        $group = 1;
                     }
                     // Phương thức từ  Repository
-                    $result =  $this->authRepo->create([
+                    $result = $this->authRepo->regiter_user($group, [
                         'user_name' => $user_name,
                         'password' => $new_password,
                         'email' => $email,
                         'group_id' => $group
                     ]);
+
                     return response()->json([
-                        'message' => 'Register ok'
-                    ]);
+                            'message' => 'Register ok'
+                        ])
+                        ->withCookie('group_id',$group);
+
                 } else {
                     //  tồn  tại: Trả về lỗi
                     return response()->json([
@@ -110,18 +108,13 @@ class AuthController extends Controller
             if (Auth::attempt(['user_name' => $user_name, 'password' => $password])) {
                 $group = 1;
 
-                if ($user_name == 'admin') {
-                    $group = 2;
-                    $request->session()->push('group_id', 2);
-                } else {
-                    $group = 1;
-                    session('group_id', 1);
-                }
-
+                $group=$user_name == 'admin'?1:2;
+                $request->session()->put('group_id', $group);
                 return response()->json([
                     'mess' => 'ok',
                     'group_id' => $group
-                ]);
+                ])
+                    ->withCookie('group_id',$group);
             } else {
                 return response()->json([
                     'error' => 'user_name or password Invalid!'

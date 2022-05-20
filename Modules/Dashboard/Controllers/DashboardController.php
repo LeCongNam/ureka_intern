@@ -67,56 +67,39 @@ class DashboardController extends Controller
         ]);
     }
 
-
-    public function get_list_user(Request $request)
-    {
-        if ($this->check_request($request, 'post')) {
-            // mặc định là trang 1
-            $page = 1;
-
-            $group = $request->group_id;
-            $page = $request->page;
-            $total_item = 10;
-            $start = ($page * $total_item) - $total_item;
-
-            //   Chỉ cho Admin Access
-            if ($group == 2) {
-                // Phương thức từ  Repository
-                $result = $this->dashboardRepo->get_limit_user($start, $total_item);
-                return response()->json([
-                    ...$result
-                ]);
-            } else {
-                return response()->json([
-                    'error' => 'Access Denined!!'
-                ], 401);
-            }
-        } else {
-            return response()->json([
-                'error' => 'method not allow in url !!'
-            ], 400);
-        }
-    }
-
     public function add_group_user(Request $request)
     {
         if ($this->check_request($request, 'post')) {
-            $result = $this->groupUserRepo->create([
-                ...$request->all()
-            ]);
+            if ($request->cookie('group_user') == 1) {
+                $result = $this->groupUserRepo->create([
+                    ...$request->all()
+                ]);
 
-            return response()->json([
-                'message' => 'Ok',
-                $result
-            ]);
+                return response()->json([
+                    'message' => 'Ok',
+                    $result
+                ]);
+            }
         }
     }
 
     public function add_user(Request $request)
     {
+
         if ($this->check_request($request, 'post')) {
-            $result = $this->dashboardRepo->create([
-                ...$request->all()
+            $user_name = $request->user_name;
+            $password = $request->password;
+            $email = $request->email;
+            $group = (int)$request->group_id;
+
+
+            $new_password = bcrypt($password);
+
+            $result = $this->dashboardRepo->add_user_by_admin($user_name, [
+                'user_name' => $user_name,
+                'password' => $new_password,
+                'email' => $email,
+                'group_id' => $group
             ]);
 
             return response()->json([
@@ -124,6 +107,78 @@ class DashboardController extends Controller
                 $result
             ]);
         }
+    }
+
+    public function get_list_user(Request $request)
+    {
+        if ($this->check_request($request, 'get')) {
+            $page = $request->page;
+            $total_item = $request->total;
+
+            $result = $this->dashboardRepo->get_limit_user($total_item, $page);
+            if (empty($result) == false) {
+                return response()->json(
+                    $result
+                );
+            } else {
+                return response()->json([
+                    'message' => 'Data emty!!'
+                ], 400);
+            }
+        }
+    }
+
+    public function get_single_user(Request $request)
+    {
+        if ($this->check_request($request, 'get')) {
+            $id = $request->route('id');
+            $result = $this->dashboardRepo->get_single_user($id);
+            return response()->json($result);
+        }
+    }
+
+    public function edit_user(Request $request)
+    {
+        if ($this->check_request($request, 'post')) {
+            $id = $request->id;
+            $user_name = $request->user_name;
+            $password = $request->password;
+            $email = $request->email;
+            $group = (int)$request->group_id;
+            $new_password = null;
+
+            $new_password = bcrypt($password);
+
+            $result = $this->dashboardRepo->update($id, [
+                'user_name' => $user_name,
+                'password' => $new_password,
+                'email' => $email,
+                'group_id' => $group
+            ]);
+
+            return response()->json($result);
+        }
+    }
+
+    public function delete_user(Request $request)
+    {
+        if ($this->check_request($request, 'delete')) {
+            $id = $request->route('id');
+      
+            $result = $this->dashboardRepo->delete($id);
+
+            return response()->json($result);
+        }
+    }
+
+    public function get_product(Request $request)
+    {
+        //   Chỉ cho Admin Access
+        // Phương thức từ  Repository
+        $result = $this->versionRepo->get_single_product($request->route('id'), $request->route('type'));
+        return response()->json(
+            $result
+        );
     }
 
     public function add_product(Request $request)
@@ -152,9 +207,8 @@ class DashboardController extends Controller
 
                 $result = $this->versionRepo->create([
                     'product_id' => $product_id,
-                    'product_name' => $product_name,
                     'desc' => $desc,
-                    'product_type' => $product_type,
+                    'type' => $product_type,
                     'url' => $url,
                     'icon' => $get_path,
                 ]);
@@ -177,9 +231,8 @@ class DashboardController extends Controller
                     //----End upload
                     $result = $this->versionRepo->create([
                         'product_id' => $product_id,
-                        'product_name' => $product_name,
                         'desc' => $desc,
-                        'product_type' => $product_type,
+                        'type' => $product_type,
                         'url' => $url,
                         'icon' => $get_path,
                     ]);
@@ -195,41 +248,24 @@ class DashboardController extends Controller
 
     public function get_list_prod(Request $request)
     {
-
-        if ($this->check_request($request, 'post')) {
-            // mặc định là trang 1
+        if ($this->check_request($request, 'get')) {
             $page = 1;
 
-            $group = $request->group_id;
+            $group = $request->route('id');
             $page = $request->page;
             $total_item = 10;
             $start = ($page * $total_item) - $total_item;
 
-            //   Chỉ cho Admin Access
-            if ($group == 2) {
                 // Phương thức từ  Repository
                 $result = $this->versionRepo->get_limit_prod($start, $total_item);
                 return response()->json([
                     ...$result
                 ]);
-            } else {
-                return response()->json([
-                    'error' => 'Access Denined!!'
-                ], 401);
-            }
+            
         }
     }
 
-    public function get_product(Request $request)
-    {
-        //   Chỉ cho Admin Access
-        // Phương thức từ  Repository
-        $result = $this->versionRepo->get_single_product($request->route('id'), $request->route('type'));
-        return response()->json([
-            ...$result
-        ]);
-    }
-
+  
     public function edit_product(Request $request)
     {
         if ($this->check_request($request, 'post')) {
@@ -267,7 +303,6 @@ class DashboardController extends Controller
             }
         }
     }
-
 
     public function delete_product(Request $request)
     {

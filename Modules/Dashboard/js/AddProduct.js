@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Form, Input, Button, Row, Col, Upload } from 'antd';
 import { Tabs } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
-
+import DevForm from "./DevForm";
+import ProductForm from "./ProductForm";
 const { TabPane } = Tabs;
 // const axios = require('axios').default
 import axios from 'axios';
@@ -56,11 +57,12 @@ function AddProduct(props) {
         axios.post('/api/add-product', formData)
             .then((res) => {
                 console.log(res)
+                form.resetFields();
                 alert('Thành công')
             })
             .catch(err => {
                 console.log(err)
-                alert('Lỗi thêm sản phẩm')
+                alert('Trùng Sản phẩm')
             })
             .then((res) => console.log(res))
 
@@ -75,7 +77,7 @@ function AddProduct(props) {
         <div>
             <Row>
                 <Col offset={4} span={9}>
-                    <Form {...layout} name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
+                    <Form {...layout} name="nest-messages"  form={form} onFinish={onFinish} validateMessages={validateMessages}>
                         <Form.Item
                             name="product_id"
                             label="Product ID"
@@ -117,50 +119,10 @@ function AddProduct(props) {
 
                         <Tabs defaultActiveKey="dev" centered onChange={tabInfo}>
                             <TabPane tab="dev" key="dev">
-                                <Form.Item
-                                    name="type"
-                                    label="Type"
-                                    key={'dev'}
-                                    initialValue={type}
-                                >
-                                    <Input disabled value='dev' />
-                                </Form.Item>
-                                <Form.Item
-                                    name="url"
-                                    label="Url"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: "Please enter URL"
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
-
+                                <DevForm/>
                             </TabPane>
                             <TabPane tab="product" key="prod">
-                                <Form.Item
-                                    name="prod_type"
-                                    label="Type"
-                                    initialValue={type}
-                                    key='prod'
-                                >
-                                    <Input value='prod' disabled />
-                                </Form.Item>
-                                <Form.Item
-                                    name="URL"
-                                    label="url"
-                                    rules={[
-                                        {
-                                            required: true,
-                                            message: "Please enter URL"
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
-
+                                <ProductForm/>
                             </TabPane>
                         </Tabs>
                         <Form.Item

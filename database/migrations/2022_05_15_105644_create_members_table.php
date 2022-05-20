@@ -19,14 +19,15 @@ class CreateMembersTable extends Migration
             $table->string('email')->nullable(false);
             $table->string('password')->nullable(false);
             $table->integer('group_id')->nullable()->default(1);
-            $table->date("created_at")->nullable();
-            $table->date("updated_at")->nullable();
-            $table->boolean("is_delete")->nullable();
-            $table->date("deleted_at")->nullable();
 
-            $table->unique(['id','user_name','email']);
+            $table->timestamp("created_at")->nullable();
+            $table->timestamp("updated_at")->nullable();
+
+            $table->integer("is_delete")->nullable();
+            $table->softDeletes()->nullable();
+
+            $table->unique(['user_name','email']);
             $table->foreign('group_id')->references('group_id')->on('group_members');
-
         });
     }
 

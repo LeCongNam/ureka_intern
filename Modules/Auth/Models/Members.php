@@ -3,16 +3,21 @@ namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Auth\Models\Group_Member;
 
-class Members extends Authenticatable
+class Members extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'members';
-    protected $fillable = ['user_name','email','password'];
-    public $timestamps = TRUE;
-    protected $user_name =null ;
-    protected $email =null ;
-    protected $password =null ;
-    protected $group_id  =null ;
-    protected $created_at =null ;
-    protected $updated_at =null ;
+    protected $fillable = ['user_name','email','password', 'group_id'];
+    protected $timestamp = true;
+
+
+
+    public function group()
+    {
+        return $this->belongsTo(Members::class, 'group_id','group_id');
+    }
 }

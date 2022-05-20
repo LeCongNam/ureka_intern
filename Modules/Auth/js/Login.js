@@ -9,19 +9,20 @@ function Login() {
         axios.post('/api/login', values)
           .then(function (response) {
             let res = response?.data
-            localStorage.setItem('group_id',res.group_id)
+            // localStorage.setItem('group_id',res.group_id)
+
             let group = res.group_id
-            if (group == 2) {
+            if (group == 1) {
                 history.push('/admin')
                 window.location.reload();
             }else{
                 history.push('/category')
-
+                window.location.reload();
             }
           })
           .catch(function (error) {
               alert('Email or Password Invalid!!!')
-            console.log(error?.message?.data);
+             console.log(error?.message?.data);
           });
     };
 

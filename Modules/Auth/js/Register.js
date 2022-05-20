@@ -38,8 +38,14 @@ const Register = () => {
                 alert('Đăng kí thành công')
             })
             .catch(err => {
-                console.log(err.message)
-                alert('Đăng kí thất bại')
+                if(err.response){
+                    console.log(err.response.data);
+                    alert(`Đăng kí thất bại \n ${err.response.data?.error}`)
+
+                }else{
+                    console.log(err.message)
+                    alert(`Đăng kí thất bại \n ${err.message}`)
+                }
 
             })
     };

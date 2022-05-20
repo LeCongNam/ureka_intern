@@ -14,13 +14,15 @@ class CreateGroupMembersTable extends Migration
     public function up()
     {
         Schema::create('group_members', function (Blueprint $table) {
-            $table->integer('group_id')->default(1)->nullable()->index();
+            $table->id();
+            $table->integer('group_id')->default(2)->nullable(false)->index();
             $table->string('group_name')->nullable(false);
-            $table->date("created_at")->nullable();
-            $table->date("updated_at")->nullable();
 
-            $table->boolean("is_delete")->nullable();
-            $table->date("deleted_at")->nullable();
+            $table->timestamp("created_at")->nullable();
+            $table->timestamp("updated_at")->nullable();
+
+            $table->integer("is_delete")->nullable();
+            $table->softDeletes()->nullable();
             $table->unique(['group_id','group_name']);
         });
     }

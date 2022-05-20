@@ -12,31 +12,35 @@ class VersionRepository extends BaseRepository implements VersionRepositoryInter
         return \Modules\Dashboard\Models\Versions::class;
     }
 
-    public function get_limit_prod($start, $total_item)
+    public function get_limit_prod($id)
     {
-        return $this->model->select([
+
+        $version = $this->model->paginate(10, [
+            'id',
             'product_id',
-            'product_name',
-            'product_type',
+            'type',
             'desc',
             'url',
-            'created_at'
-        ])->skip($start)
-            ->take($total_item)
-            ->where('is_delete', null)
-            ->get();
+            'created_at',
+        ], null, 1);
+
+        foreach ($version as $item) {
+            $item['products'] =  $item->products;
+        }
+
+        return $version;
     }
 
     public function get_single_product($id, $type)
     {
-        return $this->model->select([
-            'product_id',
-            'product_name',
-            'product_type',
-            'desc',
-            'url',
-        ])->where('product_id', $id)->where('product_type', $type)->get();
+        $version = $this->model->select()->first($id);
+       
+        $version['products'] =  $version->products;
+        
+
+        return $version;
     }
+
 
 
     public function update_versions($prod_id, $type, $attributes = [])

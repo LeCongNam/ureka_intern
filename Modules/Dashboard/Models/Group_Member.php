@@ -11,6 +11,6 @@ class Group_Member extends Model
     protected $timestamp = true;
     public function versions()
     {
-        return $this->hasMany('Members', 'group_id','id');
+        return $this->hasMany('Members');
     }
 }

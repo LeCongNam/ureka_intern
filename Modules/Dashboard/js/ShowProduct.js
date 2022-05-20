@@ -15,13 +15,16 @@ function ShowProduct(props) {
     function deleteProduct(id, type) {
         let conf = confirm('Bạn chắc chắn muốn xóa?')
         if (conf) {
-            axios.post('/api/delete-product', {
-                'product_id': id,
-                'product_type': type
-            })
+
+
+            axios.post('/api/delete-product')
                 .then((res) => {
+
                     alert('Xóa thành công')
-                    setProduct([] ||product.filter((item) =>  (item.product_id == id) && (item.product_type == type)))
+
+                    var newPro = product.filter((item) => (item.product_id !== id))
+
+                    setProduct(newPro);
                 })
                 .catch((err) => {
                     console.log(err);
@@ -32,27 +35,25 @@ function ShowProduct(props) {
 
     useEffect(() => {
         let group = Number(localStorage.getItem('group_id'));
-        axios.post('/api/list-product', {
-            'group_id': group,
-            'page': page
-        })
+        axios.get('/api/list-product')
             .then(function (response) {
-                console.log(response.data);
+                console.log('use effect', response.data);
                 setProduct(() => {
                     let result = response.data.map((item) => {
                         return {
+                            'id':item['id'],
                             'key': item['product_id'],
                             'product_id': item['product_id'],
-                            'product_name': item['product_name'],
-                            'product_type': item['product_type'],
+                            'product_name': item['products'].product_name,
+                            'type': item['type'],
                             'desc': item['desc'],
                             'url': item['url'],
                             'created_at': transform_date(item['created_at']),
-                            'tags': [item['product_type']]
+                            'tags': [item['type']]
                         }
                     })
                     return result
-                }, [])
+                })
 
             })
             .catch(function (error) {
@@ -63,7 +64,6 @@ function ShowProduct(props) {
 
 
     function getNextPage(page) {
-        console.log(page);
         return
     }
 
@@ -71,21 +71,11 @@ function ShowProduct(props) {
         <div key='show-list-product'>
             <Table
                 dataSource={product}
-                pagination={{
-                    total: 50,
-                    current: 1,
-                    key: 'pagination',
-                    onChange: function () {
-                        let currPage = this.current
-                        getNextPage(currPage + 1)
-                        console.log('Current Page', currPage);
-                        ++currPage;
-                        console.log('Next Page', currPage);
-                    }
-                }}
+                showPaginationBottom={false}
             >
-                <Column title="User Name" dataIndex="product_id" key="product_id" />
-                <Column title="product_type" dataIndex="product_type" key="product_type" />
+                <Column title="Product Id" dataIndex="product_id" key={Math.random() + 'product_id'} />
+                <Column title="Type" dataIndex="type" key="product_type" />
+                <Column title="Product Name" dataIndex="product_name" key="product_name" />
                 <Column title="desc" dataIndex="desc" key="desc" />
                 <Column title="url" dataIndex="url" key="url" />
                 <Column title="created_at" dataIndex="created_at" key="created_at" />
@@ -108,7 +98,7 @@ function ShowProduct(props) {
                     key="action"
                     render={(text, record) => (
                         <Space size="middle" key={record}>
-                            <Link to={`/admin/edit-product/` + record.product_id + '/' + record.product_type} >
+                            <Link to={`/admin/edit-product/` + record.id + '/' + record.type} >
                                 <Button>edit</Button>
                             </Link>
                             <Button onClick={() => deleteProduct(record.product_id, record.product_type)} style={{ color: 'red' }} >Delete</Button>

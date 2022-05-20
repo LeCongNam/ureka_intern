@@ -17400,15 +17400,16 @@ function Login() {
 
   var onFinish = function onFinish(values) {
     axios.post('/api/login', values).then(function (response) {
-      var res = response === null || response === void 0 ? void 0 : response.data;
-      localStorage.setItem('group_id', res.group_id);
+      var res = response === null || response === void 0 ? void 0 : response.data; // localStorage.setItem('group_id',res.group_id)
+
       var group = res.group_id;
 
-      if (group == 2) {
+      if (group == 1) {
         history.push('/admin');
         window.location.reload();
       } else {
         history.push('/category');
+        window.location.reload();
       }
     })["catch"](function (error) {
       var _error$message;
@@ -17561,8 +17562,15 @@ var Register = function Register() {
       console.log(res);
       alert('Đăng kí thành công');
     })["catch"](function (err) {
-      console.log(err.message);
-      alert('Đăng kí thất bại');
+      if (err.response) {
+        var _err$response$data;
+
+        console.log(err.response.data);
+        alert("\u0110\u0103ng k\xED th\u1EA5t b\u1EA1i \n ".concat((_err$response$data = err.response.data) === null || _err$response$data === void 0 ? void 0 : _err$response$data.error));
+      } else {
+        console.log(err.message);
+        alert("\u0110\u0103ng k\xED th\u1EA5t b\u1EA1i \n ".concat(err.message));
+      }
     });
   };
 

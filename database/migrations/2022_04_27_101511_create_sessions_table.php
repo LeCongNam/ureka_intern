@@ -21,7 +21,7 @@ class CreateSessionsTable extends Migration
             $table->text('payload');
             $table->integer('last_activity')->index();
 
-            $table->integer('group_id')->default(1);
+            $table->integer('group_id')->nullable();
 
         });
     }

@@ -3,11 +3,14 @@ import { Form, Input, Button, Row, Col, InputNumber } from 'antd'
 
 import axios from 'axios'
 
-function AddGroupUser(props) {
+function AddGroupUser() {
+    const [form] = Form.useForm();
+
     const onFinish = (values) => {
         axios.post('/api/add-group', values)
             .then(function (response) {
                 console.log(response.data);
+                form.resetFields()
                 alert('Thêm nhóm thành công')
             })
             .catch(function (error) {
@@ -40,6 +43,7 @@ function AddGroupUser(props) {
                     onFinish={onFinish}
                     onFinishFailed={onFinishFailed}
                     autoComplete="off"
+                    form={form}
                 >
                     <Form.Item
                         label="Group Id"

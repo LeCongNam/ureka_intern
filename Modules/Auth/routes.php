@@ -4,7 +4,7 @@ $namespace = 'Modules\Auth\Controllers';
 use Illuminate\Support\Facades\Route;
 
 
-Route::middleware('App\Http\Middleware\check_api')->prefix('api')->group(function () {
+Route::prefix('api')->group(function () {
      Route::any('/login', 'Modules\Auth\Controllers\AuthController@login');
      Route::post('/register',  'Modules\Auth\Controllers\AuthController@register');
      Route::get('/logout',  'Modules\Auth\Controllers\AuthController@logout');

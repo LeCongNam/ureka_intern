@@ -10,6 +10,7 @@ import AddProduct from './AddProduct';
 import Home from './Home';
 import ShowProduct from './ShowProduct';
 import EditProduct from './EditProduct';
+import EditUser from './EditUser';
 
 
  function Admin() {
@@ -54,6 +55,7 @@ import EditProduct from './EditProduct';
                                 <Route path='/admin/add-product' component={AddProduct}/>
                                 <Route path='/admin/show-product' component={ShowProduct}/>
                                 <Route path='/admin/edit-product/:id/:type' component={EditProduct}/>
+                                <Route path='/admin/edit-user/:id' component={EditUser}/>
                                 <Route exact path='/admin' component={Home}/>
                             </Switch>
                        {/* End Content */}

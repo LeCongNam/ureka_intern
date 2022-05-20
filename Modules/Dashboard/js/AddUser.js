@@ -4,11 +4,14 @@ const { Option } = Select
 import axios from "axios";
 
 function AddUser(props) {
+    const [form] = Form.useForm();
+
     const onFinish = (values) => {
         console.log(values);
         axios.post('/api/add-user',values)
         .then(res=>{
             console.log(res);
+            form.resetFields()
             alert('Thêm thành công')
         })
         .catch(err=>console.log(err))

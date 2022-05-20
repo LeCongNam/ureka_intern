@@ -1,8 +1,9 @@
 <?php
 
-namespace Modules\Dashboard\Models;
+namespace Modules\Auth\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Modules\Auth\Models\Members;
 
 class Group_Member extends Model
 {
@@ -11,6 +12,6 @@ class Group_Member extends Model
     protected $timestamp = true;
     public function versions()
     {
-        return $this->hasMany('Members');
+        return $this->hasMany('Members','group_id','group_id');
     }
 }

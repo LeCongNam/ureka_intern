@@ -49,11 +49,11 @@ function EditProduct(props) {
 
         axios.get(url)
             .then((res) => {
-                let data = { ...res.data[0] }
+                let data = res.data
                 form.setFieldsValue({
                     product_id: data.product_id,
-                    product_name: data.product_name,
-                    product_type: data.product_type,
+                    product_name: data.products.product_name,
+                    type: data.type,
                     desc: data.desc,
                     url: data.url
                 })
@@ -163,7 +163,7 @@ function EditProduct(props) {
                             <Input />
                         </Form.Item>
 
-                        <Form.Item name="product_type" label="Product Type"
+                        <Form.Item name="type" label="Product Type"
                             rules={
                                 [
                                     {
