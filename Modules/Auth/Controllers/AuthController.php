@@ -100,10 +100,10 @@ class AuthController extends Controller
     {
 
         if ($request->isMethod('post')) {
-
+            $a= 1;
             $user_name = trim($request->user_name);
             $password = trim($request->password);
-
+            
             // Kiểm tra đúng
             if (Auth::attempt(['user_name' => $user_name, 'password' => $password])) {
                 $group = 1;

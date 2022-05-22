@@ -34,38 +34,27 @@ class VersionRepository extends BaseRepository implements VersionRepositoryInter
     public function get_single_product($id, $type)
     {
         $version = $this->model->select()->first($id);
-       
+
         $version['products'] =  $version->products;
-        
+
 
         return $version;
     }
 
-
-
-    public function update_versions($prod_id, $type, $attributes = [])
+    public function update_versions($id, $attributes = [])
     {
-        $result = $this->model->select('product_id')
-            ->where('product_id', $prod_id)
-            ->where('product_type', $type);
-        if ($result) {
-            $result->where('product_id', $prod_id)
-                ->where('product_type', $type)
-                ->update($attributes);
-            return $result;
-        }
-        return false;
+        $result = $this->update($id, $attributes);
+        return $result;
     }
 
-    public function delete_versions($prod_id, $type, $attributes = [])
+    public function delete_versions($id)
     {
-        $result = $this->model->select('product_id')
-            ->where('product_id', $prod_id)
-            ->where('product_type', $type);
+        $result =   $this->delete($id);
+
         if ($result) {
-            $result->where('product_id', $prod_id)
-                ->where('product_type', $type)
-                ->update($attributes);
+            $this->update($id, [
+                'is_delete' => 1
+            ]);
             return $result;
         }
         return false;

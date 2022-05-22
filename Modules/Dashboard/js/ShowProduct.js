@@ -7,31 +7,9 @@ const { Column } = Table;
 const axios = require('axios').default;
 
 
-function ShowProduct(props) {
+function ShowProduct() {
     const [product, setProduct] = useState([]);
     const [page, setPage] = useState(1);
-
-
-    function deleteProduct(id, type) {
-        let conf = confirm('Bạn chắc chắn muốn xóa?')
-        if (conf) {
-
-
-            axios.post('/api/delete-product')
-                .then((res) => {
-
-                    alert('Xóa thành công')
-
-                    var newPro = product.filter((item) => (item.product_id !== id))
-
-                    setProduct(newPro);
-                })
-                .catch((err) => {
-                    console.log(err);
-                    alert('Xóa không  thành công!!')
-                })
-        }
-    }
 
     useEffect(() => {
         let group = Number(localStorage.getItem('group_id'));
@@ -41,8 +19,8 @@ function ShowProduct(props) {
                 setProduct(() => {
                     let result = response.data.map((item) => {
                         return {
+                            'key': item['id'],
                             'id':item['id'],
-                            'key': item['product_id'],
                             'product_id': item['product_id'],
                             'product_name': item['products'].product_name,
                             'type': item['type'],
@@ -63,6 +41,23 @@ function ShowProduct(props) {
     }, [])
 
 
+    function deleteProduct(id) {
+        let conf = confirm('Bạn chắc chắn muốn xóa?')
+        if (conf) {
+            axios.delete(`/api/delete-product/${id}`)
+                .then((res) => {
+                    alert('Xóa thành công')
+                    var newPro = product.filter((item) => (item.id !== id))
+                    setProduct(newPro);
+                })
+                .catch((err) => {
+                    console.log(err);
+                    alert('Xóa không  thành công!!')
+                })
+        }
+    }
+
+   
     function getNextPage(page) {
         return
     }
@@ -74,8 +69,7 @@ function ShowProduct(props) {
                 showPaginationBottom={false}
             >
                 <Column title="Product Id" dataIndex="product_id" key={Math.random() + 'product_id'} />
-                <Column title="Type" dataIndex="type" key="product_type" />
-                <Column title="Product Name" dataIndex="product_name" key="product_name" />
+                <Column title="Product Name" dataIndex="product_name" key={'id'+'product_id'} />
                 <Column title="desc" dataIndex="desc" key="desc" />
                 <Column title="url" dataIndex="url" key="url" />
                 <Column title="created_at" dataIndex="created_at" key="created_at" />
@@ -97,11 +91,11 @@ function ShowProduct(props) {
                     title="Action"
                     key="action"
                     render={(text, record) => (
-                        <Space size="middle" key={record}>
-                            <Link to={`/admin/edit-product/` + record.id + '/' + record.type} >
+                        <Space size="middle" >
+                            <Link to={`/admin/edit-product/` + record.id} >
                                 <Button>edit</Button>
                             </Link>
-                            <Button onClick={() => deleteProduct(record.product_id, record.product_type)} style={{ color: 'red' }} >Delete</Button>
+                            <Button onClick={() => deleteProduct(record.id)} style={{ color: 'red' }} >Delete</Button>
                         </Space>
                     )}
                 />

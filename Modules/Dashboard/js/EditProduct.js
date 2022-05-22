@@ -40,15 +40,19 @@ function EditProduct(props) {
     const [form] = Form.useForm();
     const [type, setType] = useState('dev');
     const location = useLocation()
+    let productId
+    let productType
+    let id 
 
     useEffect(() => {
         let path = location.pathname.split('/')
-        let productId = path[3]
-        let productType = path[4]
-        let url = `/api/get-product/${productId}/${productType}/`
-
+        productId = path[3]
+        id = productId;
+        let url = `/api/get-product/${productId}`
+        console.log(url);
         axios.get(url)
             .then((res) => {
+                console.log(res);
                 let data = res.data
                 form.setFieldsValue({
                     product_id: data.product_id,
@@ -73,14 +77,16 @@ function EditProduct(props) {
     const onFinish = (formValues) => {
         console.log(formValues);
         delete formValues?.upload
-        let { originFileObj, ...args } = file
-        formValues['icon'] = file.originFileObj || {}
+        if (typeof file == 'object') {
+            let { originFileObj, ...args } = file
+            formValues['icon'] = originFileObj || {}
+        }
         let formData = new FormData();
         for (const key in formValues) {
             formData.append(key, formValues[key]);
         }
-
-        axios.post('/api/edit-product', formData)
+        formData.append('id',id) 
+        axios.post(`/api/edit-product/${productId}`, formData)
             .then((res) => {
                 console.log(res)
                 alert('Thành công')
@@ -102,9 +108,12 @@ function EditProduct(props) {
         alert('Please Enter all Field!!!')
     };
 
+
+
     return (
         <div>
             <Row>
+                adfasđs
                 <Col offset={4} span={9}>
                     <Form {...layout} name="nest-messages" form={form}
                         onFinish={onFinish} validateMessages={validateMessages}
@@ -121,7 +130,7 @@ function EditProduct(props) {
                                 },
                             ]}
                         >
-                            <Input disabled/>
+                            <Input disabled />
                         </Form.Item>
 
                         <Form.Item
@@ -173,8 +182,8 @@ function EditProduct(props) {
                                 ]
                             } >
                             <Select style={{ width: 200 }} >
-                                <Option disabled value="dev">Dev</Option>
-                                <Option disabled value="prod">Product</Option>
+                                <Option value="dev">Dev</Option>
+                                <Option value="prod">Product</Option>
                             </Select>
                         </Form.Item>
 

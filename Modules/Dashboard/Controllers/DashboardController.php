@@ -164,8 +164,8 @@ class DashboardController extends Controller
     {
         if ($this->check_request($request, 'delete')) {
             $id = $request->route('id');
-      
-            $result = $this->dashboardRepo->delete($id);
+
+            $result = $this->dashboardRepo->delete_user($id);
 
             return response()->json($result);
         }
@@ -189,21 +189,25 @@ class DashboardController extends Controller
             $desc = $request->desc;
             $product_type = $request->type;
             $url = $request->url;
+            $image = $request->file('icon');
 
             // find id product
             $check = $this->productRepo->get_product_id($product_id);
 
             if (empty($check) == false) {
-                //----Upload hình ảnh  lên server:
-                $path_image = 'public/' . date('Y/m/');
-                $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
-                Storage::putFileAs(
-                    $path_image,
-                    $request->file('icon'),
-                    $image_name
-                );
-                $get_path = Storage::url($path_image . $image_name);
-                //----End upload
+                if (empty($image)) {
+                    $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
+                    //----Upload hình ảnh  lên server:
+                    $path_image = 'public/' . date('Y/m/');
+                    Storage::putFileAs(
+                        $path_image,
+                        $image,
+                        $image_name
+                    );
+                    $get_path = Storage::url($path_image . $image_name);
+                    //----End upload
+                }
+
 
                 $result = $this->versionRepo->create([
                     'product_id' => $product_id,
@@ -212,33 +216,7 @@ class DashboardController extends Controller
                     'url' => $url,
                     'icon' => $get_path,
                 ]);
-            } else {
-                // Product_id not found
-                $prod = $this->productRepo->create([
-                    'product_id' => $product_id,
-                    'product_name' => $product_name
-                ]);
-                if ($prod) {
-                    //----Upload hình ảnh  lên server:
-                    $path_image = 'public/' . date('Y/m/');
-                    $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
-                    Storage::putFileAs(
-                        $path_image,
-                        $request->file('icon'),
-                        $image_name
-                    );
-                    $get_path = Storage::url($path_image . $image_name);
-                    //----End upload
-                    $result = $this->versionRepo->create([
-                        'product_id' => $product_id,
-                        'desc' => $desc,
-                        'type' => $product_type,
-                        'url' => $url,
-                        'icon' => $get_path,
-                    ]);
-                }
             }
-
             return response()->json([
                 'message' => 'Ok',
                 $get_path
@@ -256,65 +234,76 @@ class DashboardController extends Controller
             $total_item = 10;
             $start = ($page * $total_item) - $total_item;
 
-                // Phương thức từ  Repository
-                $result = $this->versionRepo->get_limit_prod($start, $total_item);
-                return response()->json([
-                    ...$result
-                ]);
-            
+            // Phương thức từ  Repository
+            $result = $this->versionRepo->get_limit_prod($start, $total_item);
+            return response()->json([
+                ...$result
+            ]);
         }
     }
 
-  
+
     public function edit_product(Request $request)
     {
         if ($this->check_request($request, 'post')) {
             $product_id = $request->product_id;
             $product_name = $request->product_name;
             $desc = $request->desc;
-            $product_type = $request->product_type;
+            $product_type = $request->type;
             $url = $request->url;
+            $id = $request->id;
+            $image = $request->file('icon');
 
-            //----Upload hình ảnh  lên server:
-            $path_image = 'public/' . date('Y/m/');
-            $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
-            Storage::putFileAs(
-                $path_image,
-                $request->file('icon'),
-                $image_name
-            );
-            $get_path = Storage::url($path_image . $image_name);
-            //----End upload
+            if (isset($image)) {
+                //----Upload hình ảnh  lên server:
+                $path_image = 'public/' . date('Y/m/');
+                $image_name = $request->product_id . "_" . $request->product_type . ".jpg";
+                Storage::putFileAs(
+                    $path_image,
+                    $request->file('icon'),
+                    $image_name
+                );
+                //----End upload
+                $get_path = Storage::url($path_image . $image_name);
+            }
+            if (isset($get_path)) {
+                // Phương thức từ  Repository
+                $result = $this->versionRepo->update_versions($id,  [
+                    'desc' => $desc,
+                    'type' => $product_type,
+                    'url' => $url,
+                    'icon' => $get_path,
+                ]);
+            } else {
+                $result = $this->versionRepo->update($id,  [
+                    'desc' => $desc,
+                    'type' => $product_type,
+                    'url' => $url,
+                ]);
+            }
 
-            // Phương thức từ  Repository
-            $result = $this->versionRepo->update_versions($product_id, $product_type, [
-                'product_id' => $product_id,
-                'product_name' => $product_name,
-                'desc' => $desc,
-                'product_type' => $product_type,
-                'url' => $url,
-                'icon' => $get_path,
-            ]);
+
             if ($result) {
                 return response()->json([
                     'message' => 'Ok',
                     $result
                 ]);
+            } else {
+                return response()->json([
+                    'error' => 'update error!!',
+                    'message' => $result
+                ], 400);
             }
         }
     }
 
     public function delete_product(Request $request)
     {
-        if ($this->check_request($request, 'post')) {
-            $product_id = $request->product_id;
-            $product_type = $request->product_type;
+        if ($this->check_request($request, 'delete')) {
+            $id = $request->route('id');
 
             // Phương thức từ  Repository
-            $result = $this->versionRepo->update_versions($product_id, $product_type, [
-                'is_delete' => 1,
-                'deleted_at' => date("Y-m-d H:i:s")
-            ]);
+            $result = $this->versionRepo->delete_versions($id);
             if ($result) {
                 return response()->json([
                     'message' => 'Ok',

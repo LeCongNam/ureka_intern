@@ -14,14 +14,14 @@ Route::middleware('App\Http\Middleware\check_api')->prefix('api')->group(functio
 
     Route::any('/add-product', 'Modules\Dashboard\Controllers\DashboardController@add_product');
     Route::get('/list-product', 'Modules\Dashboard\Controllers\DashboardController@get_list_prod');
-    Route::get('/get-product/{id}/{type}', 'Modules\Dashboard\Controllers\DashboardController@get_product');
-    Route::post('/edit-product', 'Modules\Dashboard\Controllers\DashboardController@edit_product');
-    Route::post('/delete-product', 'Modules\Dashboard\Controllers\DashboardController@delete_product');
+    Route::get('/get-product/{id}', 'Modules\Dashboard\Controllers\DashboardController@get_product');
+    Route::post('/edit-product/{id}', 'Modules\Dashboard\Controllers\DashboardController@edit_product');
+    Route::delete('/delete-product/{id}', 'Modules\Dashboard\Controllers\DashboardController@delete_product');
 });
-//
+
 
 Route::middleware('check_admin')->prefix('admin')->group(function () {
-    Route::any("/{controller}/{action}/{id}/{type}", 'Modules\Dashboard\Controllers\DashboardController@handle');
+    Route::get("/{controller}/{action}/{id}", 'Modules\Dashboard\Controllers\DashboardController@handle');
     Route::any("/{controller}/{action}/{option}", 'Modules\Dashboard\Controllers\DashboardController@handle');
     Route::any("/{controller}/{action}", 'Modules\Dashboard\Controllers\DashboardController@handle');
     Route::any('/{controller}','Modules\Dashboard\Controllers\DashboardController@handle');

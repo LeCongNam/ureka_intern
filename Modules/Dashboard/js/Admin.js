@@ -1,16 +1,17 @@
 import React, { useState } from 'react'
 import { Layout, Menu } from 'antd';
-import Sidebar from './Layout/Sidebar';
 const { Header, Content, Footer, Sider } = Layout;
 import { Switch, Route, useHistory } from "react-router-dom";
 import AddGroupUser from './AddGroupUser';
 import AddUser from './AddUser';
 import ShowUser from './ShowUser';
 import AddProduct from './AddProduct';
-import Home from './Home';
 import ShowProduct from './ShowProduct';
 import EditProduct from './EditProduct';
 import EditUser from './EditUser';
+import Home from './Home'
+import Sidebar from "./Layout/Sidebar";
+
 
 
  function Admin() {
@@ -28,7 +29,7 @@ import EditUser from './EditUser';
             }
         }
     }));
-    
+
 
     const onCollapse = () => {
         setSollapsed((isColl) => {
@@ -36,6 +37,7 @@ import EditUser from './EditUser';
         }
         )
     };
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider collapsible collapsed={collapsed} onCollapse={onCollapse}>
@@ -54,7 +56,7 @@ import EditUser from './EditUser';
                                 <Route path='/admin/show-user' component={ShowUser}/>
                                 <Route path='/admin/add-product' component={AddProduct}/>
                                 <Route path='/admin/show-product' component={ShowProduct}/>
-                                <Route path='/admin/edit-product/:id/:type' component={EditProduct}/>
+                                <Route path='/admin/edit-product/:id' component={EditProduct}/>
                                 <Route path='/admin/edit-user/:id' component={EditUser}/>
                                 <Route exact path='/admin' component={Home}/>
                             </Switch>
@@ -62,7 +64,7 @@ import EditUser from './EditUser';
                     </div>
                 </Content>
                 <Footer style={{ textAlign: 'center' }} >
-                    Ant Design ©2018 Created by Ant UED
+                    Ant Design ©2018 Created by Ureka
                 </Footer>
             </Layout>
         </Layout>

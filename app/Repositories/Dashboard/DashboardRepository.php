@@ -41,5 +41,16 @@ class DashboardRepository extends BaseRepository implements DashboardRepositoryI
         ])->where('id',$id)->first();
     }
 
+    public function edit_user_by_id($id, $attributes = [])
+    {
+        $result  = $this->update($id, $attributes);
+        return $result;
+    }
+
+    public function delete_user($id )
+    {
+        return $this->delete($id);
+    }
+
   
 }

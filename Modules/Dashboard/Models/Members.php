@@ -20,4 +20,6 @@ class Members extends Model
     {
         return $this->belongsTo('Modules\Auth\Models\Group_Member');
     }
+
+    // Modules\Auth\Models\Group_Member
 }

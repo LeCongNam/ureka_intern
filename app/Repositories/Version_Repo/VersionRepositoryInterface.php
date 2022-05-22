@@ -7,6 +7,7 @@ interface  VersionRepositoryInterface extends RepositoryInterface{
    
     public function get_limit_prod($start);
     public function get_single_product($id,$type);
-    public function update_versions($id,$type ,$attributes = []);
-    public function delete_versions($prod_id, $type, $attributes = []);
+    public function update_versions($id,$attributes = []);
+    public function delete_versions($id);
+
 }
